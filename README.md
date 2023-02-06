@@ -22,3 +22,6 @@ Put your brands or mailing domain names into this list for monitoring operations
 
 ![image](https://user-images.githubusercontent.com/124390875/217082944-c81d8f11-b953-409d-8bb7-9fad5cdcc1f6.png)
 Put here common word collisions you want to exclude from the results to reduce false positives.
+
+
+Written in Python 3.7
