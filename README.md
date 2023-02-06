@@ -2,7 +2,7 @@
 
 As a Supplement to my other Project: https://github.com/PAST2212/domainthreat
 
-Using CERT Transparency Logs https://github.com/CaliDog/certstream-python/blob/master/README.md to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily base by domain authorities  (e.g. DENIC dont publish domains with .de TLD - ICAAN does publish .com domains).
+Using CERT Transparency Logs https://github.com/CaliDog/certstream-python/blob/master/README.md to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily base by domain authorities  (e.g. DENIC does not publish domains with .de TLD - ICAAN does publish .com domains).
 
 Features:
 
