@@ -8,7 +8,7 @@ Features:
 
 - False Positive Reduction Instruments (e.g. self defined Blacklists, Thresholds depending on string lenght)
 - IDN / Homoglyph Detection
-- CSV Export (Desktop path is default path to create output)
+- CSV Export ("Ubuntu\home\User\Desktop" path is default path to create output)
 - Find domains that are identical or confusingly similar to your name/brand/mailing domain name/etc.
 - Mix of Edit-based and Token-based textdistance algorithms to increase result quality by considering degree of freedom in choosing variations of domain - names from attacker side
 - Domain Registrar and Domain Creation Date WHOIS as well as RDAP lookups are included.
