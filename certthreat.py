@@ -23,7 +23,7 @@ Blacklist = ["cultur", "kultur", "intuit", "tuition"]
 
 whoisit.bootstrap(overrides=True)
 
-desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+desktop = os.path.join(os.path.join(os.environ['HOME']), 'Desktop')
 
 # Using Edit-based Textdistance Damerau-Levenshtein for finding look-a-like Domains
 # Lenght of brand name or string decides threshold
