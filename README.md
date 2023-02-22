@@ -20,7 +20,7 @@ Using CERT Transparency Logs https://github.com/CaliDog/certstream-python to mon
 - Domain Registrar and Domain Creation Date WHOIS as well as RDAP lookups are included.
 - Possibility to change pre-defined thresholds of fuzzy-matching algorithms if you want to
 
-**Example Screenshot**
+**Example Screenshot CSV Output**
 ![image](https://user-images.githubusercontent.com/124390875/220607184-017fc523-8148-42ca-ba70-fe6bbe8d96fe.png)
 
 **How to install:**
@@ -31,6 +31,9 @@ Using CERT Transparency Logs https://github.com/CaliDog/certstream-python to mon
 **How to run:**
 - python3 certthreat.py
 
+**Example Screenshot real-time request CERT Logs**
+![image](https://user-images.githubusercontent.com/124390875/220610681-6f2bbb30-82af-42d5-9e66-2e06020b246f.png)
+
 **How it Works**:
 
 ![image](https://user-images.githubusercontent.com/124390875/217082812-6a7260dd-2da7-4b2b-989e-66339ac5b6ed.png)
@@ -39,5 +42,7 @@ Put your brands or mailing domain names into this list for monitoring operations
 ![image](https://user-images.githubusercontent.com/124390875/217082944-c81d8f11-b953-409d-8bb7-9fad5cdcc1f6.png)
 Put here common word collisions you want to exclude from the results to reduce false positives.
 
+**Authors**
+- Patrick Steinhoff (https://www.linkedin.com/in/patrick-steinhoff-168892222/)
 
 Written in Python 3.7
