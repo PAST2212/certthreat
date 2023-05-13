@@ -15,15 +15,17 @@ import re
 
 # Strings or brand names to monitor
 # e.g. brands or mailing domain names that your company is using for sending mails
-brandnames = ["tui", "tuitravel", "tuiairways", "tuifly", "tuiairlines", "ltur", "tuigroup", "tuicruises", "robinson", "tuifrance"]
+# Keyword File as List
+list_file_keywords = []
 
 # Important if there are common word collisions between brand names and other words to reduce false positives
 # e.g. blacklist "lotto" if you monitor brand "otto"
-Blacklist = ["cultur", "kultur", "intuit", "tuition"]
+# Blacklist File as List
+list_file_blacklist_keywords = []
 
 whoisit.bootstrap(overrides=True)
 
-desktop = os.path.join(os.path.join(os.environ['HOME']), 'Desktop')
+desktop = os.path.join(os.path.join(os.environ['HOME']), 'certthreat')
 
 # Using Edit-based Textdistance Damerau-Levenshtein for finding look-a-like Domains
 # Lenght of brand name or string decides threshold
@@ -151,6 +153,30 @@ def writetocsv(domain, all_domains, keyword):
 
 createfile()
 
+# Read Keywords TXT File as List
+def read_input_keywords_file():
+    file_keywords = open(desktop + '/User Input/keywords.txt', 'r', encoding='utf-8-sig')
+    for my_domains in file_keywords:
+        domain = my_domains.replace("\n", "").lower().strip().replace(",", "")
+        list_file_keywords.append(domain)
+    file_keywords.close()
+
+
+read_input_keywords_file()
+
+
+# Read Blacklist for Keywords TXT File as List
+def read_input_blacklist_file():
+    file_blacklist = open(desktop + '/User Input/blacklist_keywords.txt', 'r', encoding='utf-8-sig')
+    for my_domains in file_blacklist:
+        domain = my_domains.replace("\n", "").lower().strip().replace(",", "")
+        list_file_blacklist_keywords.append(domain)
+    file_blacklist.close()
+
+
+read_input_blacklist_file()
+
+
 def print_callback(message, context):
 
     logging.debug("Message -&gt; {}".format(message))
@@ -169,8 +195,8 @@ def print_callback(message, context):
         sys.stdout.write(u"[{}] {} (SAN: {})\n".format(datetime.datetime.now().strftime('%m/%d/%y %H:%M:%S'), domain, ", ".join(message['data']['leaf_cert']['all_domains'][1:])))
         sys.stdout.flush()
 
-        for keyword in brandnames:
-            if keyword in domain and all(black_keyword not in domain for black_keyword in Blacklist) is True:
+        for keyword in list_file_keywords:
+            if keyword in domain and all(black_keyword not in domain for black_keyword in list_file_blacklist_keywords) is True:
                 writetocsv(domain, all_domains, keyword)
 
             elif jaccard(keyword, domain) is not None:
