@@ -36,11 +36,11 @@ Using CERT Transparency Logs https://github.com/CaliDog/certstream-python to mon
 
 **How it Works**:
 
-![image](https://user-images.githubusercontent.com/124390875/217082812-6a7260dd-2da7-4b2b-989e-66339ac5b6ed.png)
-Put your brands or mailing domain names into this list for monitoring operations (without the TLD).
+1. Put your brand names or mailing domain names into this TXT file "User Input/keywords.txt" line per line for monitoring operations (without the TLD). Some "TUI" Names are listed per default.
 
-![image](https://user-images.githubusercontent.com/124390875/217082944-c81d8f11-b953-409d-8bb7-9fad5cdcc1f6.png)
-Put here common word collisions you want to exclude from the results to reduce false positives.
+2. Put common word collisions into this TXT file "User Input/blacklist_keywords.txt" line per line you want to exclude from the results to reduce false positives.
+
+- e.g. blacklist "lotto" if you monitor keyword "otto", e.g. blacklist "amazonas" if you want to monitor "amazon", ...
 
 **Authors**
 - Patrick Steinhoff (https://www.linkedin.com/in/patrick-steinhoff-168892222/)
