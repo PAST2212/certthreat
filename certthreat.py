@@ -55,13 +55,18 @@ def damerau(keyword, domain):
 
 # Using Token-based Textdistance Jaccard for finding look-a-like Domains
 # Threshold is independent from brand name or string lenght
-def jaccard(keyword, domain):
+def jaccard(keyword, domain, n_gram):
     domain_name = tldextract.extract(domain).domain
-    jaccard = textdistance.jaccard.normalized_similarity(keyword, domain_name)
-    if jaccard >= 0.9:
+    ngram_keyword = [keyword[i:i+n_gram] for i in range(len(keyword)-n_gram+1)]
+    ngram_domain_name = [domain_name[i:i+n_gram] for i in range(len(domain_name)-n_gram+1)]
+
+    intersection = set(ngram_keyword).intersection(ngram_domain_name)
+    union = set(ngram_keyword).union(ngram_domain_name)
+
+    similarity = len(intersection) / len(union) if len(union) > 0 else 0
+
+    if similarity > 0.5:
         return domain
-    else:
-        pass
 
 # Using Edit-based Textdistance Jaro Winkler for finding look-a-like Domains
 # Threshold is independent from brand name or string lenght
@@ -199,7 +204,7 @@ def print_callback(message, context):
             if keyword in domain and all(black_keyword not in domain for black_keyword in list_file_blacklist_keywords) is True:
                 writetocsv(domain, all_domains, keyword)
 
-            elif jaccard(keyword, domain) is not None:
+            elif jaccard(keyword, domain, 2) is not None:
                 writetocsv(domain, all_domains, keyword)
 
             elif damerau(keyword, domain) is not None:
