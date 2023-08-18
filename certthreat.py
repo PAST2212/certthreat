@@ -32,26 +32,18 @@ desktop = os.path.join(os.path.join(os.environ['HOME']), 'certthreat')
 def damerau(keyword, domain):
     domain_name = tldextract.extract(domain).domain
     damerau = textdistance.damerau_levenshtein(keyword, domain_name)
-    if len(keyword) <= 3:
-        pass
 
-    elif 4 <= len(keyword) <= 6:
+    if 4 <= len(keyword) <= 6:
         if damerau <= 1:
             return domain
-        else:
-            pass
 
     elif 6 <= len(keyword) <= 9:
         if damerau <= 2:
             return domain
-        else:
-            pass
 
     elif len(keyword) >= 10:
         if damerau <= 3:
             return domain
-        else:
-            pass
 
 # Using Token-based Textdistance Jaccard for finding look-a-like Domains
 # Threshold is independent from brand name or string lenght
@@ -75,8 +67,6 @@ def jaro_winkler(keyword, domain):
     Jaro_Winkler = textdistance.jaro_winkler.normalized_similarity(keyword, domain_name)
     if Jaro_Winkler >= 0.9:
         return domain
-    else:
-        pass
 
 # Make WHOIS or RDAP Domain Creation Date lookup
 def whois_creation_date(domain):
