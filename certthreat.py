@@ -102,13 +102,11 @@ def whois_registrar(domain):
     try:
         registered = whois.whois(domain)
         registered_1 = registered.registrar.replace(',', '')
-        time.sleep(0.3)
         return registered_1
 
     except:
         try:
             registered = whoisit.domain(domain)
-            time.sleep(0.3)
             registered_1 = registered['entities']['registrar'][0].get('name').replace(',', '')
             return registered_1
 
