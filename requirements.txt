@@ -1,7 +1,7 @@
 idna==2.10
 textdistance==4.3.0
 tldextract==3.3.1
-whois==0.9.16
+python-whois==0.8.0
 whoisit==2.6.2
 dnspython==2.2.1
 certstream==1.12
