@@ -23,7 +23,7 @@ list_file_keywords = []
 # Blacklist File as List
 list_file_blacklist_keywords = []
 
-whoisit.bootstrap(overrides=True)
+whoisit.bootstrap()
 
 desktop = os.path.join(os.path.join(os.environ['HOME']), 'certthreat')
 
@@ -68,6 +68,7 @@ def jaro_winkler(keyword, domain):
     if Jaro_Winkler >= 0.9:
         return domain
 
+
 # Make WHOIS or RDAP Domain Creation Date lookup
 def whois_creation_date(domain):
     try:
@@ -95,32 +96,23 @@ def whois_creation_date(domain):
     except whoisit.errors.ResourceDoesNotExist:
         pass
 
+
 # Make WHOIS or RDAP Domain Creation Date lookup
 def whois_registrar(domain):
     try:
-        registered = whoisit.domain(domain, allow_insecure_ssl=True)['entities']['registrar']
-        registered_temp = list([registered[0].get('name')])
-        registered_temp_2 = str(registered_temp).encode('utf-8-sig').decode('ascii', 'ignore')
-        domain_registrar = re.sub(r"[\[,'\]]", "", str(registered_temp_2))
-        return domain_registrar
+        registered = whois.whois(domain)
+        registered_1 = registered.registrar.replace(',', '')
+        time.sleep(0.3)
+        return registered_1
 
-    except (whoisit.errors.UnsupportedError, KeyError, AttributeError, whoisit.errors.QueryError, UnicodeError, UnicodeEncodeError, UnicodeDecodeError):
+    except:
         try:
-            registered = whois.whois(domain)
-            domain_registrar = str(registered.registrar).replace(',', '')
-            return domain_registrar
+            registered = whoisit.domain(domain)
+            time.sleep(0.3)
+            registered_1 = registered['entities']['registrar'][0].get('name').replace(',', '')
+            return registered_1
 
-        except TypeError:
-            pass
-        except AttributeError:
-            pass
-        except Exception:
-            pass
-        except whois.parser.PywhoisError:
-            pass
-
-    except whoisit.errors.ResourceDoesNotExist:
-            return 'NXDOMAIN'
+        except:
             pass
 
 
