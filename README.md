@@ -2,7 +2,7 @@
 
 As a Supplement to my other Project: https://github.com/PAST2212/domainthreat
 
-Using CERT Transparency Logs to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily base by domain authorities  (e.g. DENIC does not publish domains with .de TLD - ICANN does publish .com domains).
+Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily base by domain authorities  (e.g. DENIC does not publish domains with .de TLD - ICANN does publish .com domains).
 
 **You can recognize:**
 - combo squatting (e.g. amazon-shop.com), 
