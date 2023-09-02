@@ -25,7 +25,7 @@ list_file_blacklist_keywords = []
 
 whoisit.bootstrap()
 
-desktop = os.path.join(os.path.join(os.environ['HOME']), 'certthreat')
+desktop = os.path.join(os.path.expanduser('~'), 'certthreat')
 
 # Using Edit-based Textdistance Damerau-Levenshtein for finding look-a-like Domains
 # Lenght of brand name or string decides threshold
@@ -57,7 +57,7 @@ def jaccard(keyword, domain, n_gram):
 
     similarity = len(intersection) / len(union) if len(union) > 0 else 0
 
-    if similarity > 0.5:
+    if similarity > 0.6:
         return domain
 
 # Using Edit-based Textdistance Jaro Winkler for finding look-a-like Domains
