@@ -5,18 +5,17 @@ As a Supplement to my other Project: https://github.com/PAST2212/domainthreat
 Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily base by domain authorities  (e.g. DENIC does not publish domains with .de TLD - ICANN does publish .com domains).
 
 **You can recognize:**
-- combo squatting (e.g. amazon-shop.com), 
-- typo squatting (ammazon.com), 
-- brand impersonations, 
-- phishing attacks (e.g. CEO-Fraud),
-- and other forms of phishing websites / look-alike Domains (e.g. 𝗉ay𝞀al.com - greek letter RHO '𝞀' instead of latin letter 'p')
+- full-word matching (e.g. amazon-shop.com), 
+- regular typo squatting cases (e.g. ammazon.com), 
+- typical look-alikes / phishing / so called CEO-Fraud domains (e.g. arnazon.com (rn = m),
+- IDN Detection / look-alike Domains based on full word matching (e.g. 𝗉ay𝞀al.com - greek letter RHO '𝞀' instead of latin letter 'p'),
 
 **Features**:
 - False Positive Reduction Instruments (e.g. self defined Blacklists, Thresholds depending on string lenght)
 - IDN / Homoglyph Detection
-- CSV Export ("Ubuntu\home\User\Desktop" path is default path to create output)
+- CSV Export
 - Find domains and **Subdomains** that are identical or confusingly similar to your name/brand/mailing domain name/etc 
-- Mix of Edit-based and Token-based textdistance algorithms to increase result quality by considering degree of freedom in choosing variations of domain - names from attacker side
+- Mix of Edit-based and Token-based textdistance algorithms to increase result quality by considering degree of freedom in choosing variations of domain names from attacker side
 - Domain Registrar and Domain Creation Date WHOIS as well as RDAP lookups are included.
 - Possibility to change pre-defined thresholds of fuzzy-matching algorithms if you want to
 
