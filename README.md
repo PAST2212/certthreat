@@ -44,4 +44,4 @@ Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor p
 **Authors**
 - Patrick Steinhoff (https://www.linkedin.com/in/patrick-steinhoff-168892222/)
 
-Written in Python 3.7
+Written in Python 3.10
