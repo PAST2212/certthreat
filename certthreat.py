@@ -26,7 +26,7 @@ desktop = os.path.join(os.path.expanduser('~'), 'certthreat')
 
 
 def damerau(keyword, domain):
-    domain_name = tldextract.extract(domain).domain
+    domain_name = tldextract.extract(domain, include_psl_private_domains=True).domain
     similarity = textdistance.damerau_levenshtein(keyword, domain_name)
 
     if 4 <= len(keyword) <= 6:
@@ -34,7 +34,7 @@ def damerau(keyword, domain):
             return domain
 
 
-    elif 6 <= len(keyword) <= 9:
+    elif 6 < len(keyword) <= 9:
         if similarity <= 2:
             return domain
 
@@ -46,7 +46,7 @@ def damerau(keyword, domain):
 
 
 def jaccard(keyword, domain, n_gram):
-    domain_letter_weight = '#' + tldextract.extract(domain).domain + '#'
+    domain_letter_weight = '#' + tldextract.extract(domain, include_psl_private_domains=True).domain + '#'
     keyword_letter_weight = '#' + keyword + '#'
     ngram_keyword = [keyword_letter_weight[i:i + n_gram] for i in range(len(keyword_letter_weight) - n_gram + 1)]
     ngram_domain_name = [domain_letter_weight[i:i + n_gram] for i in range(len(domain_letter_weight) - n_gram + 1)]
@@ -59,7 +59,7 @@ def jaccard(keyword, domain, n_gram):
 
 
 def jaro_winkler(keyword, domain):
-    domain_name = tldextract.extract(domain).domain
+    domain_name = tldextract.extract(domain, include_psl_private_domains=True).domain
     similarity = textdistance.jaro_winkler.normalized_similarity(keyword, domain_name)
     if similarity >= 0.9:
         return similarity
