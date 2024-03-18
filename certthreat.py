@@ -46,8 +46,8 @@ def damerau(keyword, domain):
 
 
 def jaccard(keyword, domain, n_gram):
-    domain_letter_weight = '#' + tldextract.extract(domain, include_psl_private_domains=True).domain + '#'
-    keyword_letter_weight = '#' + keyword + '#'
+    domain_letter_weight = tldextract.extract(domain, include_psl_private_domains=True).domain
+    keyword_letter_weight = keyword
     ngram_keyword = [keyword_letter_weight[i:i + n_gram] for i in range(len(keyword_letter_weight) - n_gram + 1)]
     ngram_domain_name = [domain_letter_weight[i:i + n_gram] for i in range(len(domain_letter_weight) - n_gram + 1)]
     intersection = set(ngram_keyword).intersection(ngram_domain_name)
