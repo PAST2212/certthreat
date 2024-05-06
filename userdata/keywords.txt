@@ -1,5 +1,4 @@
-amazon
-google
-tiktok
-microsoft
-instagram
+tui
+tuitravel
+tuigroup
+ltur
