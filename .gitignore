@@ -1,0 +1,7 @@
+test
+__pycache__
+*.csv
+.venv
+*.idea
+*.pyc
+venv
