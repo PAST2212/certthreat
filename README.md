@@ -16,7 +16,7 @@ Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor p
 - CSV Export
 - Find domains and **Subdomains** that are identical or confusingly similar to your name/brand/mailing domain name/etc 
 - Mix of Edit-based and Token-based textdistance algorithms to increase result quality by considering degree of freedom in choosing variations of domain names from attacker side
-- Domain Registrar and Domain Creation Date WHOIS as well as RDAP lookups are included.
+- Domain Registrar and Domain Creation Date WHOIS are included.
 - Possibility to change pre-defined thresholds of fuzzy-matching algorithms if you want to
 
 **Example Screenshot CSV Output**
@@ -35,9 +35,9 @@ Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor p
 
 **How it Works**:
 
-1. Put your brand names or mailing domain names into this TXT file "User Input/keywords.txt" line per line for monitoring operations (without the TLD). Some "TUI" Names are listed per default.
+1. Put your brand names or mailing domain names into this TXT file "userdata/keywords.txt" line per line for monitoring operations (without the TLD). Some "TUI" Names are listed per default.
 
-2. Put common word collisions into this TXT file "User Input/blacklist_keywords.txt" line per line you want to exclude from the results to reduce false positives.
+2. Put common word collisions into this TXT file "userdata/blacklist_keywords.txt" line per line you want to exclude from the results to reduce false positives.
 
 - e.g. blacklist "lotto" if you monitor keyword "otto", e.g. blacklist "amazonas" if you want to monitor "amazon", ...
 
