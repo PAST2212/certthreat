@@ -2,7 +2,7 @@
 
 As a Supplement to my other Project: https://github.com/PAST2212/domainthreat
 
-Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily base by domain authorities  (e.g. DENIC does not publish domains with .de TLD - ICANN does publish .com domains).
+Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor phishing domains or brand impersonations. This is interesting to find newly domain registrations that are not published on a daily basis by domain authorities  (e.g. DENIC does not publish domains with .de TLD - ICANN does publish .com domains).
 
 **You can recognize:**
 - full-word matching (e.g. amazon-shop.com), 
@@ -44,4 +44,13 @@ Using CERT Transparency Logs via https://certstream.calidog.io/ API to monitor p
 **Authors**
 - Patrick Steinhoff (https://www.linkedin.com/in/patrick-steinhoff-168892222/)
 
-Written in Python 3.10
+**Aditional Info**
+- Written in Python 3.10
+- Recommended Python Version >= 3.8
+- CERT STREAM Monitoring works with Multithreading: Parallel Processing Paramater "STANDARD_THREADS" and "MAX_QUEUE_SIZE" can be tuned based on your specific environment:
+  - Default Value STANDARD_THREADS are CPU core based
+  - Default Value MAX_QUEUE_SIZE is 1500
+  - Increase STANDARD_THREADS, if CPU usage is low and queue is often full.
+  - Decrease STANDARD_THREADS, if CPU usage is a concern. 
+  - Increase MAX_QUEUE_SIZE, if too many certificates are issued during high-volume periods
+  - Decrease MAX_QUEUE_SIZE, if memory usage is a concern.

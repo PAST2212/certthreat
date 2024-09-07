@@ -1,24 +1,27 @@
-import logging
-import sys
-import datetime
+from pathlib import Path
 import os
 import csv
-from pathlib import Path
+import datetime
+import logging
 import unicodedata
+from concurrent.futures import ThreadPoolExecutor
+from queue import Queue
 import textdistance
-import pandas as pd
-import tldextract
 import whois
+import tldextract
 import certstream
+import pandas as pd
 from detectidna import unconfuse
-
 
 USERDATA_DIRECORY = Path(__file__).parents[0] / 'userdata'
 
+MAX_QUEUE_SIZE = 1500
+STANDARD_THREADS = min(4, os.cpu_count())
 
-def damerau(keyword, domain) -> str:
+
+def damerau(keyword: str, domain: str, tld_extract: tldextract.tldextract.TLDExtract) -> str:
     # Based on / Inspired by (c) Everton Gomede, PhD
-    domain_name = tldextract.extract(domain, include_psl_private_domains=True).domain
+    domain_name = tld_extract(domain).domain
     len_s1 = len(keyword)
     len_s2 = len(domain_name)
     d = [[0] * (len_s2 + 1) for _ in range(len_s1 + 1)]
@@ -45,19 +48,17 @@ def damerau(keyword, domain) -> str:
         if damerau_distance <= 1:
             return domain
 
-
     elif 6 < len(keyword) <= 9:
         if damerau_distance <= 2:
             return domain
-
 
     elif len(keyword) >= 10:
         if damerau_distance <= 3:
             return domain
 
 
-def jaccard(keyword, domain, n_gram):
-    domain_letter_weight = tldextract.extract(domain, include_psl_private_domains=True).domain
+def jaccard(keyword: str, domain: str, n_gram: int, tld_extract: tldextract.tldextract.TLDExtract) -> str:
+    domain_letter_weight = tld_extract(domain).domain
     keyword_letter_weight = keyword
     ngram_keyword = [keyword_letter_weight[i:i + n_gram] for i in range(len(keyword_letter_weight) - n_gram + 1)]
     ngram_domain_name = [domain_letter_weight[i:i + n_gram] for i in range(len(domain_letter_weight) - n_gram + 1)]
@@ -69,14 +70,14 @@ def jaccard(keyword, domain, n_gram):
         return domain
 
 
-def jaro_winkler(keyword, domain):
-    domain_name = tldextract.extract(domain, include_psl_private_domains=True).domain
+def jaro_winkler(keyword: str, domain: str, tld_extract: tldextract.tldextract.TLDExtract) -> str:
+    domain_name = tld_extract(domain).domain
     similarity = textdistance.jaro_winkler.normalized_similarity(keyword, domain_name)
     if similarity >= 0.9:
-        return similarity
+        return domain
 
 
-def make_whois_request(domain) -> tuple:
+def make_whois_request(domain: str) -> tuple:
 
     creation_date = ''
     registrar = ''
@@ -90,12 +91,12 @@ def make_whois_request(domain) -> tuple:
             registrar = registered.registrar.replace(',', '')
 
     except Exception as e:
-        print(f'{type(e)}: Something went wrong with WHOIS Request for {domain}. Error Message: {e}')
+        logging.exception(f'{type(e)}: Something went wrong with WHOIS Request for {domain}. Error Message: {e}')
 
     return creation_date, registrar
 
 
-def createfile():
+def create_file() -> None:
     conso_file_path = f"CERT_Monitoring_Calender_Week_{datetime.datetime.now().isocalendar()[1]}_{datetime.datetime.today().year}.csv"
     if not os.path.exists(conso_file_path):
         header = ['(Sub-)Domain', 'Registered Domain', 'Keyword', 'Registrar', 'Domain Creation_Date', 'Monitored Date']
@@ -104,7 +105,7 @@ def createfile():
             writer.writerow(header)
 
 
-def writetocsv(domain, all_domains, keyword):
+def write_to_csv(domain: str, all_domains: list, keyword: str) -> None:
     registered_domain = tldextract.extract(domain, include_psl_private_domains=True).registered_domain
     creation_date, registrar = make_whois_request(domain=registered_domain)
     df = pd.DataFrame([all_domains[0]])
@@ -116,7 +117,7 @@ def writetocsv(domain, all_domains, keyword):
     df.to_csv(f"CERT_Monitoring_Calender_Week_{datetime.datetime.now().isocalendar()[1]}_{datetime.datetime.today().year}.csv", index=False, mode='a', header=False)
 
 
-def get_keywords():
+def get_keywords() -> list[str]:
     main_keywords = []
     file_keywords = open(f'{USERDATA_DIRECORY}/keywords.txt', 'r', encoding='utf-8-sig')
     for my_domains in file_keywords:
@@ -128,7 +129,7 @@ def get_keywords():
     return main_keywords
 
 
-def get_blacklist_keywords():
+def get_blacklist_keywords() -> list[str]:
     black_keywords = []
     file_blacklist = open(f'{USERDATA_DIRECORY}/blacklist_keywords.txt', 'r', encoding='utf-8-sig')
     for my_domains in file_blacklist:
@@ -140,13 +141,31 @@ def get_blacklist_keywords():
     return black_keywords
 
 
-def print_callback(message, context):
+def process_domain(domain: str, all_domains: list, keywords: list[str], blacklist_keywords: list[str], tld_extract: tldextract.tldextract.TLDExtract) -> None:
+    for keyword in keywords:
+        if (keyword in domain and all(black_keyword not in domain for black_keyword in blacklist_keywords)) or jaccard(keyword, domain, 2, tld_extract) is not None or damerau(keyword, domain, tld_extract) is not None or jaro_winkler(keyword, domain, tld_extract) is not None:
+            write_to_csv(domain, all_domains, keyword)
+            return None
 
-    logging.debug("Message -&gt; {}".format(message))
+        latin_domain = unicodedata.normalize('NFKD', unconfuse(domain)).encode('latin-1', 'ignore').decode('latin-1')
+        if keyword in latin_domain and all(black_keyword not in latin_domain for black_keyword in blacklist_keywords):
+            write_to_csv(domain, all_domains, keyword)
+            return None
 
-    if message['message_type'] == "heartbeat":
-        return
+    return None
 
+
+def worker(queue, keywords: list[str], blacklist_keywords: list[str], tld_extract: tldextract.tldextract.TLDExtract) -> None:
+    while True:
+        item = queue.get()
+        if item is None:
+            break
+        domain, all_domains = item
+        process_domain(domain, all_domains, keywords, blacklist_keywords, tld_extract)
+        queue.task_done()
+
+
+def print_callback(message, context, queue) -> None:
     if message['message_type'] == "certificate_update":
         all_domains = message['data']['leaf_cert']['all_domains']
 
@@ -155,31 +174,30 @@ def print_callback(message, context):
         else:
             domain = all_domains[0]
 
-        sys.stdout.write(u"[{}] {} (SAN: {})\n".format(datetime.datetime.now().strftime('%m/%d/%y %H:%M:%S'), domain, ", ".join(message['data']['leaf_cert']['all_domains'][1:])))
-        sys.stdout.flush()
+        logging.info(f"[{datetime.datetime.now().strftime('%m/%d/%y %H:%M:%S')}] {domain} (SAN: {', '.join(all_domains[1:])})")
 
-        for keyword in keywords:
-            if keyword in domain and all(black_keyword not in domain for black_keyword in blacklist_keywords):
-                writetocsv(domain, all_domains, keyword)
+        queue.put((domain, all_domains))
 
-            elif jaccard(keyword, domain, 2) is not None:
-                writetocsv(domain, all_domains, keyword)
 
-            elif damerau(keyword, domain) is not None:
-                writetocsv(domain, all_domains, keyword)
+def main():
 
-            elif jaro_winkler(keyword, domain) is not None:
-                writetocsv(domain, all_domains, keyword)
+    keywords = get_keywords()
+    blacklist_keywords = get_blacklist_keywords()
+    create_file()
 
-            elif unconfuse(domain) is not domain:
-                latin_domain = unicodedata.normalize('NFKD', unconfuse(domain)).encode('latin-1', 'ignore').decode('latin-1')
-                if keyword in latin_domain and all(black_keyword not in latin_domain for black_keyword in blacklist_keywords):
-                    writetocsv(domain, all_domains, keyword)
+    tld_extract_object = tldextract.TLDExtract(include_psl_private_domains=True)
+    tld_extract_object('google.com')
+
+    logging.basicConfig(format='[%(levelname)s:%(name)s] - %(message)s', level=logging.INFO)
+
+    queue = Queue(maxsize=MAX_QUEUE_SIZE)
+
+    with ThreadPoolExecutor(max_workers=STANDARD_THREADS) as executor:
+        for _ in range(STANDARD_THREADS):
+            executor.submit(worker, queue, keywords, blacklist_keywords, tld_extract_object)
+
+        certstream.listen_for_events(lambda message, context: print_callback(message, context, queue), url='wss://certstream.calidog.io/')
 
 
 if __name__ == '__main__':
-    keywords = get_keywords()
-    blacklist_keywords = get_blacklist_keywords()
-    createfile()
-    logging.basicConfig(format='[%(levelname)s:%(name)s] %(asctime)s - %(message)s', level=logging.INFO)
-    certstream.listen_for_events(print_callback, url='wss://certstream.calidog.io/')
+    main()
